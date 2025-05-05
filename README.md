@@ -43,7 +43,3 @@ Clone: git clone lalela-client
 Install: npm install
 Run: npm run dev
 
-
-
-You need ffmpeg, yt-dlp, and a YouTube API key in a .env file.
-
