@@ -12,7 +12,6 @@ Frontend Started: React app is set up with basic pages and can connect to the ba
 
 Challenges
 
-YouTube API Limits: We can only search YouTube a few times a day, or it stops working.
 Tool Setup: Installing yt-dlp and ffmpeg on my Mac was hard because of missing instructions.
 Background Jobs: Setting up Redis and Sidekiq took time, and jobs sometimes got stuck.
 Frontend Connection: The React app having trouble talking to the backend because of something called CORS(Still ongoing)
