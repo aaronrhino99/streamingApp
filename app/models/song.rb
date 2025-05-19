@@ -1,10 +1,10 @@
 class Song < ApplicationRecord
-  belongs_to :user
-  has_many :playlist_songs, dependent: :destroy
-  has_many :playlists, through: :playlist_songs
-  
+  belongs_to :user, optional: true
   has_one_attached :audio_file
-  
-  validates :title, presence: true
-  validates :youtube_id, presence: true, uniqueness: true
+
+  enum status: { queued: 0, processing: 1, ready: 2, failed: 3 }
+
+  validates :youtube_id, presence: true, length: { is: 11 }
+
+  scope :recent, -> { order(created_at: :desc) }
 end

@@ -1,6 +1,8 @@
 require_relative "boot"
 
 require "rails/all"
+# Dotenv::Railtie.load
+
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -15,6 +17,9 @@ module LalelaApi
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore,
+                          key: "_lalela_session"
 
     # Configuration for the application, engines, and railties goes here.
     #

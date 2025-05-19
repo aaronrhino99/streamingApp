@@ -48,16 +48,17 @@ end
 
 # Authentication
 gem 'devise-jwt'
+gem   "devise"
 # File handling
 gem 'image_processing' # Required for Active Storage
-
 # For env vars
 gem 'dotenv-rails', groups: [:development, :test]
 
 # For background jobs (coming soon)
 gem 'sidekiq'
+gem "sidekiq-scheduler"
 
-gem 'yt-dlp.rb'
+gem "yt-dlp.rb"
 
 gem 'google-api-client'
 

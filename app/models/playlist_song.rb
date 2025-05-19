@@ -1,7 +1,7 @@
 class PlaylistSong < ApplicationRecord
   belongs_to :playlist
   belongs_to :song
-  
-  validates :position, presence: true
-  acts_as_list scope: :playlist
+
+  validates :song_id, uniqueness: { scope: :playlist_id }
+  default_scope { order(position: :asc, created_at: :asc) }
 end
