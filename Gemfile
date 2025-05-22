@@ -49,6 +49,8 @@ end
 # Authentication
 gem 'devise-jwt'
 gem   "devise"
+gem 'devise_token_auth'
+
 # File handling
 gem 'image_processing' # Required for Active Storage
 # For env vars
@@ -61,5 +63,6 @@ gem "sidekiq-scheduler"
 gem "yt-dlp.rb"
 
 gem 'google-api-client'
+gem 'omniauth'
 
 
