@@ -48,7 +48,7 @@ end
 
 # Authentication
 gem 'devise-jwt'
-gem   "devise"
+gem "devise"
 gem 'devise_token_auth'
 
 # File handling

@@ -1,8 +1,8 @@
 class ApplicationController < ActionController::API
-        include DeviseTokenAuth::Concerns::SetUserByToken
+  include DeviseTokenAuth::Concerns::SetUserByToken
   include Devise::Controllers::Helpers
 
-  before_action :authenticate_user!, unless: -> { Rails.env.development? && request.path.start_with?("/sidekiq") }
+  before_action :authenticate_user!, unless: :devise_controller?
 
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
 
