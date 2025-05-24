@@ -17,8 +17,8 @@ DeviseTokenAuth.setup do |config|
   config.token_cost = Rails.env.test? ? 4 : 10
 
   config.default_confirm_success_url = "http://localhost:5173"
-
-
+  config.require_client_password_reset_token = true
+  config.send_confirmation_email = true
   # Sets the max number of concurrent devices per user, which is 10 by default.
   # After this limit is reached, the oldest tokens will be removed.
   # config.max_number_of_devices = 10

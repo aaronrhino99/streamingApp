@@ -19,6 +19,13 @@ class SongsController < ApplicationController
     render json: @song, status: :accepted
   end
 
+  def download
+    song = current_user.songs.find(params[:id])
+    song.update!(status: :queued)
+    DownloadSongJob.perform_later(song.id)
+    render json: { message: "Download started" }, status: :accepted
+  end
+
   # PATCH /songs/:id
   def update
     if @song.update(song_params)

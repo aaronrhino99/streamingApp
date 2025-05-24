@@ -3,13 +3,17 @@ class DownloadSongJob < ApplicationJob
 
   def perform(song_id)
     song = Song.find(song_id)
-    song.update!(status: :processing)
+    path = DownloadConvertService.call(song)
 
-    file_path = DownloadConvertService.new(song.youtube_id).call
-    song.audio_file.attach(io: File.open(file_path), filename: File.basename(file_path), content_type: "audio/mpeg")
-    song.update!(status: :ready)
-  rescue => e
-    Rails.logger.error("Download failed: #{e.message}")
-    song.update!(status: :failed) if song
+    if path && File.exist?(path)
+      song.audio_file.attach(
+        io: File.open(path),
+        filename: File.basename(path),
+        content_type: "audio/mpeg"
+      )
+      song.update!(status: :ready)
+    else
+      song.update!(status: :failed)
+    end
   end
 end

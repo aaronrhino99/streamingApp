@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   resources :songs, only: %i[index show create update] do
     get :stream, on: :member
+    post :download, on: :member
   end
 
   resources :playlists, only: %i[index show create] do
