@@ -49,7 +49,7 @@ end
 # Authentication
 gem 'devise-jwt'
 gem "devise"
-gem 'devise_token_auth'
+# gem 'devise_token_auth'
 
 # File handling
 gem 'image_processing' # Required for Active Storage
@@ -65,4 +65,6 @@ gem "yt-dlp.rb"
 gem 'google-api-client'
 gem 'omniauth'
 
+gem "redis"
+gem 'foreman'
 

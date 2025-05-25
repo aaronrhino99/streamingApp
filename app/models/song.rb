@@ -7,4 +7,8 @@ class Song < ApplicationRecord
   validates :youtube_id, presence: true, length: { is: 11 }
 
   scope :recent, -> { order(created_at: :desc) }
+
+  def audio_file_url
+    Rails.application.routes.url_helpers.rails_blob_url(audio_file, only_path: true)
+  end
 end

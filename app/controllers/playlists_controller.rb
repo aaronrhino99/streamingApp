@@ -1,5 +1,6 @@
 class PlaylistsController < ApplicationController
-  before_action :set_playlist, only: %i[show]
+  # before_action :set_playlist, only: %i[show]
+   # before_action :authenticate_user!
 
   def index
     render json: current_user.playlists
