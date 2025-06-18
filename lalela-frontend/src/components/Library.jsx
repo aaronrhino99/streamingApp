@@ -1,65 +1,63 @@
-import { useState } from 'react'
+// src/components/Library.jsx
+import { useEffect, useState } from "react";
+import useHowl from "../hooks/useHowl";
 
-export default function Search() {
-  const [query, setQuery] = useState('')
-  const [results, setResults] = useState([])
+export default function Library() {
+  const [songs, setSongs] = useState([]);
+  const [currentUrl, setCurrentUrl] = useState(null);
+  const { playing, play, pause } = useHowl(currentUrl);
+  const API = import.meta.env.VITE_API_BASE_URL;
 
-  const API = import.meta.env.VITE_API_BASE_URL
-
-  const searchSongs = async () => {
-    if (!query.trim()) return
-    try {
-      const res = await fetch(`${API}/search?q=${encodeURIComponent(query)}`)
-      if (!res.ok) throw new Error('Search failed')
-      const data = await res.json()
-      setResults(data)
-    } catch (err) {
-      console.error(err)
-      alert('Error fetching search results')
-    }
-  }
-
-  const downloadSong = async (video) => {
-    try {
-      const res = await fetch(`${API}/songs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: video.title,
-          video_id: video.video_id,
-          thumbnail_url: video.thumbnail_url
-        }),
+  useEffect(() => {
+    // Include JWT in the Authorization header
+    const token = localStorage.getItem("jwt");
+    fetch(`${API}/songs`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load songs");
+        return res.json();
       })
-      if (!res.ok) throw new Error('Download request failed')
-      alert('Download started!')
-    } catch (err) {
-      console.error(err)
-      alert('Error starting download')
-    }
-  }
+      .then(setSongs)
+      .catch((err) => {
+        console.error(err);
+        alert("Error loading library");
+      });
+  }, [API]);
 
   return (
-    <div>
-      <h2>🔍 Search YouTube</h2>
-      <input
-        value={query}
-        onChange={e => setQuery(e.target.value)}
-        placeholder="Search for a song…"
-        onKeyDown={e => e.key === 'Enter' && searchSongs()}
-      />
-      <button onClick={searchSongs}>Search</button>
+    <div style={{ padding: 20 }}>
+      <h2>🎵 Your Library</h2>
+      {songs.length === 0 && (
+        <p>No songs yet. Head over to Search to download one!</p>
+      )}
 
-      <div style={{ marginTop: 20 }}>
-        {results.map(video => (
-          <div key={video.video_id} style={{ marginBottom: 16 }}>
-            <img src={video.thumbnail_url} alt="" width={120} />
-            <div>{video.title}</div>
-            <button onClick={() => downloadSong(video)}>
-              Download
-            </button>
-          </div>
-        ))}
-      </div>
+      <ul style={{ listStyle: "none", padding: 0 }}>
+        {songs.map((song) => {
+          const url = `${API}${song.audio_file_url}`;
+          return (
+            <li key={song.id} className="matrix-card">
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 500 }}>{song.title}</div>
+                <div style={{ marginTop: 8 }}>
+                  {currentUrl === url && playing ? (
+                    <button onClick={pause}>⏸️ Pause</button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (currentUrl !== url) setCurrentUrl(url);
+                        play();
+                      }}
+                    >
+                      ▶️ {currentUrl === url && !playing ? "Resume" : "Play"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
-  )
+  );
 }
