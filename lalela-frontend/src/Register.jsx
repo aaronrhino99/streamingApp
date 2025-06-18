@@ -1,35 +1,33 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
-export default function Login({ onLogin }) {
+export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const API = import.meta.env.VITE_API_BASE_URL;
-  const navigate = useNavigate();
 
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API}/users/sign_in`, {
+      const res = await fetch(`${API}/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user: { email, password } }),
+        body: JSON.stringify({
+          user: { email, password, password_confirmation: password }
+        })
       });
-      if (!res.ok) throw new Error(`Login failed: ${res.status}`);
-      const header = res.headers.get('Authorization');
-      const token = header && header.split(' ')[1];
-      localStorage.setItem('jwt', token);
-      onLogin();
-      navigate('/search');
+      if (!res.ok) throw new Error(`Registration failed: ${res.status}`);
+      alert('Registered! Please log in.');
+      setEmail('');
+      setPassword('');
     } catch (err) {
       console.error(err);
-      alert('Login error—check console.');
+      alert('Registration error—check console.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: 20 }}>
-      <h2>Login</h2>
+      <h2>Register</h2>
       <div style={{ marginBottom: 12 }}>
         <input
           type="email"
@@ -51,7 +49,7 @@ export default function Login({ onLogin }) {
         />
       </div>
       <button type="submit" style={{ padding: '8px 16px' }}>
-        Login
+        Register
       </button>
     </form>
   );
