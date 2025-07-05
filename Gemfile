@@ -64,7 +64,8 @@ gem "yt-dlp.rb"
 
 gem 'google-api-client'
 gem 'omniauth'
-
+gem 'bcrypt'
 gem "redis"
 gem 'foreman'
+gem 'jwt'
 

@@ -1,72 +1,103 @@
 module Api
   module V1
-    class PlaylistsController < ApplicationController
-      before_action :authenticate_user!
-      before_action :set_playlist, only: [:show, :update, :destroy, :add_song, :remove_song]
+    class AuthController < ApplicationController
+
+      before_action :set_playlist, only: [:show, :update, :destroy]
       
       def index
-        @playlists = current_user.playlists
-        render json: @playlists
+        @playlists = current_user.playlists.order(created_at: :desc)
+        render json: {
+          playlists: @playlists.map do |playlist|
+            {
+              id: playlist.id,
+              name: playlist.name,
+              description: playlist.description,
+              songs_count: playlist.songs.count,
+              created_at: playlist.created_at,
+              updated_at: playlist.updated_at
+            }
+          end
+        }
       end
       
       def show
-        render json: @playlist, include: :songs
+        render json: {
+          playlist: {
+            id: @playlist.id,
+            name: @playlist.name,
+            description: @playlist.description,
+            songs: @playlist.songs.map do |song|
+              {
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                youtube_id: song.youtube_id,
+                duration: song.duration,
+                thumbnail_url: song.thumbnail_url,
+                audio_file_url: song.audio_file.attached? ? song.audio_file_url : nil
+              }
+            end,
+            created_at: @playlist.created_at,
+            updated_at: @playlist.updated_at
+          }
+        }
       end
       
       def create
-        @playlist = current_user.playlists.new(playlist_params)
+        @playlist = current_user.playlists.build(playlist_params)
         
         if @playlist.save
-          render json: @playlist, status: :created
+          render json: {
+            message: 'Playlist created successfully',
+            playlist: {
+              id: @playlist.id,
+              name: @playlist.name,
+              description: @playlist.description,
+              songs_count: 0,
+              created_at: @playlist.created_at,
+              updated_at: @playlist.updated_at
+            }
+          }, status: :created
         else
-          render json: @playlist.errors, status: :unprocessable_entity
+          render json: {
+            errors: @playlist.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
       
       def update
         if @playlist.update(playlist_params)
-          render json: @playlist
+          render json: {
+            message: 'Playlist updated successfully',
+            playlist: {
+              id: @playlist.id,
+              name: @playlist.name,
+              description: @playlist.description,
+              songs_count: @playlist.songs.count,
+              created_at: @playlist.created_at,
+              updated_at: @playlist.updated_at
+            }
+          }
         else
-          render json: @playlist.errors, status: :unprocessable_entity
+          render json: {
+            errors: @playlist.errors.full_messages
+          }, status: :unprocessable_entity
         end
       end
       
       def destroy
         @playlist.destroy
-        head :no_content
-      end
-      
-      # Add a song to playlist
-      def add_song
-        song = Song.find(params[:song_id])
-        position = @playlist.playlist_songs.count + 1
-        
-        playlist_song = @playlist.playlist_songs.find_or_initialize_by(song: song)
-        playlist_song.position = position unless playlist_song.persisted?
-        
-        if playlist_song.save
-          render json: @playlist, include: :songs
-        else
-          render json: playlist_song.errors, status: :unprocessable_entity
-        end
-      end
-      
-      # Remove a song from playlist
-      def remove_song
-        song = Song.find(params[:song_id])
-        playlist_song = @playlist.playlist_songs.find_by(song: song)
-        
-        if playlist_song&.destroy
-          render json: @playlist, include: :songs
-        else
-          render json: { error: "Song not found in playlist" }, status: :not_found
-        end
+        render json: {
+          message: 'Playlist deleted successfully'
+        }
       end
       
       private
       
       def set_playlist
         @playlist = current_user.playlists.find(params[:id])
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Playlist not found' }, status: :not_found
       end
       
       def playlist_params
@@ -75,3 +106,16 @@ module Api
     end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+

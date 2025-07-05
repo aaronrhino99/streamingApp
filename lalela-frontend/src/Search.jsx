@@ -1,21 +1,18 @@
-// src/Search.jsx
 import { useState } from "react";
+import styles from "./Search.module.css";
 
 export default function Search() {
-
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
-  // Hard-code first; swap to import.meta.env.VITE_API_BASE_URL once it works
-  const API = "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api/v1";
 
   const searchSongs = async () => {
     if (!query.trim()) return;
-
     try {
-      const res = await fetch(
-        `${API}/search?q=${encodeURIComponent(query)}`
-      );
+      const res = await fetch(`${API}/search?q=${encodeURIComponent(query)}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+      });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data = await res.json();
       setResults(data);
@@ -26,68 +23,63 @@ export default function Search() {
   };
 
   const downloadSong = async (video) => {
-    
     try {
-      const token = localStorage.getItem('jwt');
+      const token = localStorage.getItem("jwt");
       const res = await fetch(`${API}/songs`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
           title: video.title,
           video_id: video.video_id,
-          thumbnail_url: video.thumbnail_url
+          title: video.title,
+          youtube_id: video.video_id,
+          thumbnail_url: video.thumbnail_url,
         }),
-      })
-      if (!res.ok) throw new Error('Download request failed')
-      alert('Download started!')
+      });
+      if (!res.ok) throw new Error("Download request failed");
+      alert("Download started!");
     } catch (err) {
-      console.error('Download failed:', err)
-      alert('Error starting download')
+      console.error("Download failed:", err);
+      alert("Error starting download");
     }
-  }
+  };
+
   return (
-    <div style={{ padding: 20 }}>
-      <h2>🔍 Search YouTube</h2>
-      <div style={{ marginBottom: 12 }}>
+    <div className={styles.container}>
+      <h2 className={styles.title}>🔍 Search YouTube</h2>
+
+      <div className={styles.controls}>
         <input
-          style={{ width: 300, padding: 8 }}
+          className={styles.input}
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search for a song…"
+          placeholder="Search for a song..."
           onKeyDown={(e) => e.key === "Enter" && searchSongs()}
         />
-        <button
-          style={{ marginLeft: 8, padding: "8px 12px" }}
-          onClick={searchSongs}
-        >
+        <button className={styles.button} onClick={searchSongs}>
           Search
         </button>
       </div>
 
-      <div>
+      <div className={styles.results}>
         {results.length === 0 ? (
           <p>No results yet</p>
         ) : (
           results.map((video) => (
-            <div
-              key={video.video_id}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
+            <div key={video.video_id} className={styles.card}>
               <img
+                className={styles.thumbnail}
                 src={video.thumbnail_url}
                 alt={video.title}
-                width={120}
-                style={{ marginRight: 12 }}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 500 }}>{video.title}</div>
+                <div className={styles.cardTitle}>{video.title}</div>
                 <button
-                  style={{ marginTop: 4, padding: "4px 8px" }}
+                  className={styles.downloadBtn}
                   onClick={() => downloadSong(video)}
                 >
                   Download

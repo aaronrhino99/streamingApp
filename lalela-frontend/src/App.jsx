@@ -1,69 +1,82 @@
-import { Routes, Route, Link, Navigate } from 'react-router-dom';
+// src/App.jsx
 import { useState } from 'react';
-import Search from './Search';
-import Library from './components/Library';
-// import Login from './Login';
-// import Register from './Register';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
+
+import Search   from './Search';
+import Library  from './components/Library';
+import Login    from './Login';
+import Register from './Register';
 
 export default function App() {
+  // Kick off loggedIn based on presence of a JWT
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('jwt'));
 
-  function handleLogout() {
+  const handleLogin = () => setLoggedIn(true);
+  const handleLogout = () => {
     localStorage.removeItem('jwt');
     setLoggedIn(false);
-  }
+  };
 
   return (
-    <div style={{ padding: 20 }}>
-      <nav>
-        <Link to="/search">Search</Link>{' '}
-        <Link to="/library">Library</Link>{' '}
-        {loggedIn ? (
-          <button onClick={handleLogout}>Logout</button>
+    <div>
+      {/* Nav always visible */}
+      <nav style={{ padding: 16, borderBottom: '1px solid #0f0' }}>
+        {!loggedIn ? (
+          <>
+            <Link to="/login"    style={{ marginRight: 12 }}>Login</Link>
+            <Link to="/register">Register</Link>
+          </>
         ) : (
           <>
-            <Link to="/login">Login</Link>{' '}
-            <Link to="/register">Register</Link>
+            <Link to="/search"  style={{ marginRight: 12 }}>Search</Link>
+            <Link to="/library" style={{ marginRight: 12 }}>Library</Link>
+            <button onClick={handleLogout}>Logout</button>
           </>
         )}
       </nav>
 
-      <Routes>
-        <Route path="/" element={<h2>Welcome to Lalela!</h2>} />
+      {/* Content */}
+      <div style={{ padding: 20 }}>
+        <Routes>
+          {/* Redirect root */}
+          <Route path="/" element={<Navigate to={loggedIn ? "/search" : "/login"} />} />
 
-        <Route
-          path="/login"
-          element={
-            loggedIn ? (
-              <Navigate to="/" />
-            ) : (
-              <Login onAuthenticated={() => setLoggedIn(true)} />
-            )
-          }
-        />
+          {/* Public routes */}
+          <Route
+            path="/login"
+            element={loggedIn
+              ? <Navigate to="/search" />
+              : <Login onLogin={handleLogin} />
+            }
+          />
+          <Route
+            path="/register"
+            element={loggedIn
+              ? <Navigate to="/search" />
+              : <Register />
+            }
+          />
 
-        <Route
-          path="/register"
-          element={
-            loggedIn ? (
-              <Navigate to="/" />
-            ) : (
-              <Register onRegistered={() => {}} />
-            )
-          }
-        />
+          {/* Protected routes */}
+          <Route
+            path="/search"
+            element={loggedIn
+              ? <Search />
+              : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/library"
+            element={loggedIn
+              ? <Library />
+              : <Navigate to="/login" />
+            }
+          />
 
-        <Route path="/search" element={<Search />} />
-
-        <Route
-          path="/library"
-          element={
-            loggedIn ? <Library /> : <Navigate to="/login" />
-          }
-        />
-
-        <Route path="*" element={<h2>404 Not Found</h2>} />
-      </Routes>
+          {/* Fallback 404 */}
+          <Route path="*" element={<h2>404: Page Not Found</h2>} />
+        </Routes>
+      </div>
     </div>
   );
 }
