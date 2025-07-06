@@ -1,27 +1,4 @@
-/* index.css */
 
-/* Change the background from pure black to a dark gradient */
-body, html, #root {
-  background: linear-gradient(135deg, #000000, #111111, #222222);
-}
-
-/* Swap neon-green for electric blue */
-:root {
-  --accent-color: #0af;  /* new accent */
-}
-
-/* Use the accent variable throughout */
-button, nav a, .matrix-card {
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-}
-
-button:hover {
-  background: var(--accent-color);
-  color: #000;
-}
-
-/* Font change: monospace → something more sci-fi */
-body {
-  font-family: 'Orbitron', sans-serif;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

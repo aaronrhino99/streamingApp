@@ -2,9 +2,9 @@ class Song < ApplicationRecord
   belongs_to :user, optional: true
   has_one_attached :audio_file
 
-  # enum status: { queued: 0, processing: 1, ready: 2, failed: 3 }
+   enum status: { queued: 0, processing: 1, ready: 2, failed: 3 }
 
-  validates :youtube_id, presence: true, length: { is: 11 }
+  validates :video_id, presence: true, length: { is: 11 }
 
   scope :recent, -> { order(created_at: :desc) }
 

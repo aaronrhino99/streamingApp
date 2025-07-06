@@ -34,7 +34,6 @@ export default function Search() {
         body: JSON.stringify({
           title: video.title,
           video_id: video.video_id,
-          title: video.title,
           youtube_id: video.video_id,
           thumbnail_url: video.thumbnail_url,
         }),

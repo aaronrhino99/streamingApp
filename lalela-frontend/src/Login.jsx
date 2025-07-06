@@ -9,7 +9,6 @@ export default function Login({ onLogin }) {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // Point to your namespaced API
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
   const navigate = useNavigate();
 
@@ -41,7 +40,7 @@ export default function Login({ onLogin }) {
       const { token } = await res.json();
       localStorage.setItem('jwt', token);
       onLogin();
-      navigate('/search'); // or whatever your post-login route is
+      navigate('/search');
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message || 'Invalid email or password');
@@ -51,50 +50,72 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="auth-form-container">
-      <h2>Login</h2>
-      {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit} className="auth-form">
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            required
-            autoComplete="username"
-          />
-        </div>
+    <div className="pb-32 flex flex-col items-center justify-center min-h-screen bg-indigo-500">
+      <div className="max-w-2xl w-full mx-auto flex flex-col items-center space-y-4">
+        <h1 className="font-bold text-7xl text-indigo-100">Soundcloud</h1>
+        <p className="text-lg text-gray-200">Share your music with the world!</p>
 
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            required
-            autoComplete="current-password"
-          />
-        </div>
+        {error && (
+          <div className="bg-red-200 text-red-800 p-2 rounded">
+            {error}
+          </div>
+        )}
 
-        <button 
-          type="submit" 
-          className="submit-button"
-          disabled={isLoading}
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white bg-opacity-90 p-8 rounded-lg shadow-lg w-full max-w-md space-y-6"
         >
-          {isLoading ? 'Logging in...' : 'Login'}
-        </button>
-      </form>
+          <div className="flex flex-col">
+            <label htmlFor="email" className="mb-1 font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="you@example.com"
+              required
+              autoComplete="username"
+              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
 
-      <div className="auth-footer">
-        Don’t have an account? <a href="/register">Register</a>
+          <div className="flex flex-col">
+            <label htmlFor="password" className="mb-1 font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="••••••••"
+              required
+              autoComplete="current-password"
+              className="px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-purple-500 text-purple-100 py-2 rounded-lg font-semibold hover:bg-purple-600 transition"
+          >
+            {isLoading ? 'Logging in...' : 'Login'}
+          </button>
+        </form>
+
+        <div className="flex space-x-4">
+          <a
+            href="/register"
+            className="bg-green-500 text-green-100 p-2 rounded-lg w-32 text-center hover:bg-green-600 transition"
+          >
+            Register
+          </a>
+        </div>
       </div>
     </div>
   );
