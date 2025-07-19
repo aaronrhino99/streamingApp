@@ -1,9 +1,9 @@
 Devise.setup do |config|
-  config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
-  require 'devise/orm/active_record'
-  config.case_insensitive_keys = [:email]
-  config.strip_whitespace_keys = [:email]
-  config.skip_session_storage = [:http_auth]
+  config.mailer_sender = "please-change-me-at-config-initializers-devise@example.com"
+  require "devise/orm/active_record"
+  config.case_insensitive_keys = [ :email ]
+  config.strip_whitespace_keys = [ :email ]
+  config.skip_session_storage = [ :http_auth ]
   config.stretches = Rails.env.test? ? 1 : 12
   config.reconfirmable = true
   config.password_length = 6..128
@@ -15,14 +15,14 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
 
   config.jwt do |jwt|
-    jwt.secret = ENV['DEVISE_JWT_SECRET_KEY'] || Rails.application.credentials.secret_key_base
+    jwt.secret = ENV["DEVISE_JWT_SECRET_KEY"] || Rails.application.credentials.secret_key_base
     jwt.dispatch_requests = [
-      ['POST', %r{^/users/sign_in$}],
-      ['POST', %r{^/users$}]
+      [ "POST", %r{^/users/sign_in$} ],
+      [ "POST", %r{^/users$} ]
     ]
     jwt.revocation_requests = [
-      ['DELETE', %r{^/users/sign_out$}]
+      [ "DELETE", %r{^/users/sign_out$} ]
     ]
-    jwt.expiration_time = 15.minutes.to_i
+    jwt.expiration_time = 3600.minutes.to_i
   end
 end

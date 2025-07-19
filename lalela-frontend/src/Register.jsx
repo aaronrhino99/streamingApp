@@ -1,12 +1,11 @@
-// src/Register.jsx
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,16 +34,28 @@ export default function Register() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: formData.email,
-          password: formData.password
-        })
+          password: formData.password,
+          password_confirmation: formData.confirmPassword,
+        }),
       });
 
       if (!res.ok) {
-        const errData = await res.json();
+        const errData = await res.json().catch(() => ({}));
         throw new Error(errData.errors?.join(', ') || 'Registration failed');
       }
 
-      navigate('/login', { state: { registrationSuccess: true } });
+      // ✅ Recommended: handle token if server returns it
+      const data = await res.json();
+
+      if (data.token) {
+        localStorage.setItem('jwt', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        navigate('/search');
+      } else {
+        // If your backend doesn't return a token, redirect to login
+        navigate('/login', { state: { registrationSuccess: true } });
+      }
+
     } catch (err) {
       console.error('Registration error:', err);
       setError(err.message);
@@ -54,67 +65,45 @@ export default function Register() {
   };
 
   return (
-    <div className="auth-form-container">
-      <h2>Create Account</h2>
-
-      {error && <div className="error-message" role="alert">{error}</div>}
-
-      <form onSubmit={handleSubmit} className="auth-form" aria-busy={isLoading}>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="you@example.com"
-            required
-            aria-describedby={error && 'error-message'}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="••••••••"
-            required
-            minLength={6}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            placeholder="••••••••"
-            required
-            minLength={6}
-          />
-        </div>
-
+    <div className="max-w-md mx-auto p-6 bg-white shadow rounded">
+      <h2 className="text-2xl font-bold mb-4">Register</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Email"
+          required
+          className="w-full border p-2 rounded"
+        />
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+          required
+          className="w-full border p-2 rounded"
+        />
+        <input
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+          required
+          className="w-full border p-2 rounded"
+        />
+        {error && <p className="text-red-600">{error}</p>}
         <button
           type="submit"
-          className="submit-button btn"
           disabled={isLoading}
-          aria-busy={isLoading}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
         >
-          {isLoading ? 'Registering…' : 'Register'}
+          {isLoading ? 'Registering...' : 'Register'}
         </button>
       </form>
-
-      <div className="auth-footer">
-        Already have an account? <Link to="/login">Sign in</Link>
-      </div>
     </div>
   );
 }

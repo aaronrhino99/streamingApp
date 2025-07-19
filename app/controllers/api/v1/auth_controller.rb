@@ -3,7 +3,7 @@ module Api
     class AuthController < Api::V1::BaseController
       # Skip authentication only for public actions
       skip_before_action :authenticate_user!, only: %i[register login logout]
-      
+      before_action       :authenticate_user!, only: %i[logout profile]
       # POST   /api/v1/auth/register
       def register
         user = User.new(user_params)
@@ -39,11 +39,13 @@ module Api
       
       # DELETE /api/v1/auth/logout
       def logout
+        before_action :authenticate_user!
         # If using a blacklist strategy, revoke the token here
         render json: { message: 'Logged out' }, status: :ok
       end
       # GET /api/v1/auth/profile
       def profile
+        before_action :authenticate_user!
         render json: current_user.slice(:id, :email), status: :ok
       end
       
