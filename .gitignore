@@ -9,6 +9,7 @@
 
 # Ignore all environment files.
 /.env*
+/Downloads
 
 # Ignore all logfiles and tempfiles.
 /log/*
@@ -22,6 +23,7 @@
 !/tmp/pids/.keep
 
 # Ignore storage (uploaded files in development and any SQLite databases).
+/Downloads
 /storage/*
 !/storage/.keep
 /tmp/storage/*
