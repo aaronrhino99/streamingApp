@@ -30,7 +30,6 @@ Welcome to **Lalela**, a passion project born from curiosity and a desire to mas
 * ✅ **React Router v6** — Client-side routing and protected pages
 * ✅ **react-youtube** — Instant in-app YouTube embeds
 * ✅ **Howler.js** — Robust audio playback controls
-* ✅ **Canvas (Digital Rain)** — Matrix-style background for flair
 * ✅ **Custom CSS** — Neon-green on black, monospaced terminal vibe
 
 ### 🚀 Dev & Ops
